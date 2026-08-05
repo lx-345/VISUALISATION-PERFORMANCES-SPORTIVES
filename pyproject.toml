@@ -18,6 +18,8 @@ dependencies = [
 
 [project.scripts]
 visualisation-performances-sportives = "visualisation_performances_sportives:main"
+# La NOUVELLE commande pour lancer l'interface web
+app = "visualisation_performances_sportives.streamlit_app.app:run"
 
 [build-system]
 requires = ["uv_build>=0.11.14,<0.12.0"]
@@ -52,3 +54,4 @@ omit = [
     "src/visualisation_performances_sportives/streamlit_app/app.py",
     "src/visualisation_performances_sportives/streamlit_app/style.py",
 ]
+

@@ -1,11 +1,11 @@
 import plotly.express as px
 import streamlit as st
 
-# 1. Importation de votre CSS
-from style import apply_custom_css
-
-# 2. Importation de VOS modules locaux (Inspiré de votre reporting.py)
+# 2. Importation de VOS modules locaux
 from visualisation_performances_sportives.analyse_sportive.data import get_clean_data
+
+# 1. Importation de votre CSS (CORRIGÉ POUR PASSER LE TEST)
+from visualisation_performances_sportives.streamlit_app.style import apply_custom_css
 
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(
@@ -258,12 +258,34 @@ else:
             )
             st.plotly_chart(fig_acwr, use_container_width=True)
 
-        st.warning(
-            "Les colonnes 'Ratio_ACWR' ou "
-            "'start_date_local' sont absentes des données traitées."
-        )
+        else:  # CORRIGÉ : Remise du else ici
+            st.warning(
+                "Les colonnes 'Ratio_ACWR' ou "
+                "'start_date_local' sont absentes des données traitées."
+            )
+
         if "Statut Alerte" in df_filtered.columns:
             st.subheader("Aperçu des Statuts d'Alerte")
             alert_counts = df_filtered["Statut Alerte"].value_counts().reset_index()
             alert_counts.columns = ["Statut", "Nombre de séances"]
             st.dataframe(alert_counts, use_container_width=True)
+
+
+def run():
+    """
+    Point d'entrée CLI (Command Line Interface).
+    Permet de lancer l'application via la configuration du pyproject.toml.
+    """
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    # Récupère le chemin absolu de ce fichier (app.py)
+    app_path = Path(__file__).resolve()
+
+    # Équivaut à taper 'python -m streamlit run app.py' dans le terminal
+    subprocess.run([sys.executable, "-m", "streamlit", "run", str(app_path)])
+
+
+if __name__ == "__main__":
+    pass
