@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def apply_custom_css():
     css = """
     <style>
@@ -61,7 +62,8 @@ def apply_custom_css():
     /* STYLE DES CARTES KPIs (Performances)*/
     /* ----------------------------------- */
     div[data-testid="metric-container"] {
-        background-color: #141414; /* Noir légèrement plus clair pour détacher la carte */
+        background-color: #141414; 
+        /* Noir légèrement plus clair pour détacher la carte */
         border-left: 4px solid #1D3557; /* Ligne Bleu Marine */
         padding: 20px;
         color: #F5F5DC;
