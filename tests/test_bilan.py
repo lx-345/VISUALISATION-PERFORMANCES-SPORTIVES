@@ -1,6 +1,9 @@
+
 from openpyxl import Workbook
+import pytest
 from visualisation_performances_sportives.analyse_sportive.bilan import construire_page_bilan
 
+@pytest.mark.unit
 def test_construire_page_bilan():
     """Vérifie que l'onglet Bilan est bien créé avec son titre et ses formules."""
     wb = Workbook()

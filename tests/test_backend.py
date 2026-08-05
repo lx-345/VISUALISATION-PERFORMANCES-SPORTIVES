@@ -1,7 +1,9 @@
 import pandas as pd
 from openpyxl import Workbook
 from visualisation_performances_sportives.analyse_sportive.backend import preparer_donnees_agregees, construire_onglets_back
+import pytest
 
+@pytest.mark.unit
 def test_preparer_donnees_agregees():
     """Vérifie que les calculs de regroupement par année fonctionnent."""
     df_test = pd.DataFrame({

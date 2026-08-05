@@ -1,6 +1,8 @@
+import pytest
 from openpyxl import Workbook
 from visualisation_performances_sportives.analyse_sportive.analyse import construire_page_analyse
 
+@pytest.mark.unit
 def test_construire_page_analyse():
     """Vérifie que l'onglet Analyse est bien créé, titré et contient un graphique."""
     wb = Workbook()

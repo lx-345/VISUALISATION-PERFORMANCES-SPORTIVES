@@ -1,6 +1,8 @@
 from openpyxl import Workbook
 from visualisation_performances_sportives.analyse_sportive.charge import construire_page_charge
+import pytest
 
+@pytest.mark.unit
 def test_construire_page_charge():
     """Vérifie que l'onglet Charge de travail est bien créé avec son titre."""
     wb = Workbook()
