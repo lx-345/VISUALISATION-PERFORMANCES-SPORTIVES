@@ -1,11 +1,8 @@
-# Image de base : Python 3.13 en version slim
-FROM python:3.13-slim
+# On utilise Python 3.12 pour correspondre exactement à votre projet !
+FROM python:3.12-slim
 
 # Copie du binaire uv depuis l'image officielle
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-
-# ✅ LA CORRECTION EST ICI : On force les vraies copies pour éviter les problèmes de droits
-ENV UV_LINK_MODE=copy
 
 # Répertoire de travail dans le conteneur
 WORKDIR /app
