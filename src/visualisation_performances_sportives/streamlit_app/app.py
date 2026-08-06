@@ -8,7 +8,6 @@ from visualisation_performances_sportives.streamlit_app.style import (
     apply_custom_css,
 )
 
-# Configuration de la page
 st.set_page_config(
     page_title="Espace Performance",
     page_icon="⚡",
@@ -25,12 +24,10 @@ def load_data():
     return get_clean_data()
 
 
-# Gestion de la navigation
 if "entered_app" not in st.session_state:
     st.session_state.entered_app = False
 
 if not st.session_state.entered_app:
-    # Page d'accueil
     st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True)
     st.markdown(
         "<h1 style='text-align: center; font-size: 70px; "
@@ -44,14 +41,12 @@ if not st.session_state.entered_app:
         st.rerun()
 
 else:
-    # Dashboard
     try:
         df = load_data()
     except Exception as e:
         st.error(f"Erreur lors du chargement des données depuis S3 : {e}")
         st.stop()
 
-    # Barre latérale (Filtres)
     if st.sidebar.button("← Retour à l'accueil"):
         st.session_state.entered_app = False
         st.rerun()
@@ -77,7 +72,6 @@ else:
     else:
         type_selection = []
 
-    # Filtrage des données
     df_filtered = df.copy()
     if annee_selection != "Toutes" and "annee" in df_filtered.columns:
         df_filtered = df_filtered[df_filtered["annee"] == annee_selection]
@@ -95,7 +89,6 @@ else:
         ]
     )
 
-    # 1. Bilan Hebdomadaire
     with tab1:
         st.header("Résumé des Performances")
         col1, col2, col3, col4 = st.columns(4)
@@ -135,7 +128,6 @@ else:
         if cols_to_show:
             st.dataframe(df_filtered[cols_to_show].tail(10), use_container_width=True)
 
-    # 2. Analyse Globale
     with tab2:
         st.header("Tendances et Répartition")
         col_chart1, col_chart2 = st.columns(2)
@@ -190,7 +182,6 @@ else:
             else:
                 st.info("Types d'entraînement non disponibles.")
 
-    # 3. Suivi de la Charge (ACWR)
     with tab3:
         st.header("Analyse de la Fatigue et du Rendement (ACWR)")
 
