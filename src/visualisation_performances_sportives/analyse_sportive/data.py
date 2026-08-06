@@ -4,22 +4,24 @@ import pandas as pd
 import s3fs
 from dotenv import load_dotenv
 
-# Charge les variables d'environnement depuis le fichier .env à la racine
 load_dotenv()
 
 
 def get_clean_data() -> pd.DataFrame:
-    """
-    Récupère les données nettoyées depuis le bucket S3
+    """Récupère les données nettoyées depuis le bucket S3
+
     et retourne un DataFrame pandas prêt pour l'analyse.
     """
-    # On ajoute le bucket "medas" au début du chemin
-    chemin_s3 = "medas/paleo/donnees_strava/activites_clean.csv"
+    # 1. Récupération dynamique du bucket et sécurisation du chemin
+    bucket = os.getenv("S3_BUCKET", "paleo")
+    chemin_s3 = f"{bucket}/donnees_strava/activites_clean.csv"
 
-    # On récupère l'URL brute telle qu'elle est dans le fichier Kubernetes
-    endpoint = os.getenv("AWS_S3_ENDPOINT")
+    # 2. Récupération et formatage de l'endpoint HTTPS pour s3fs
+    endpoint = os.getenv("AWS_S3_ENDPOINT", "https://minio.lab.sspcloud.fr")
+    if endpoint and not endpoint.startswith("http"):
+        endpoint = f"https://{endpoint}"
 
-    # Configuration du système de fichiers S3
+    # 3. Configuration du système de fichiers S3
     fs = s3fs.S3FileSystem(
         client_kwargs={"endpoint_url": endpoint},
         key=os.getenv("AWS_ACCESS_KEY_ID"),
@@ -27,7 +29,7 @@ def get_clean_data() -> pd.DataFrame:
         token=os.getenv("AWS_SESSION_TOKEN"),
     )
 
-    # Lecture directe du CSV distant
+    # 4. Lecture directe du CSV distant
     with fs.open(chemin_s3, "rb") as f:
         df = pd.read_csv(f)
 
@@ -35,6 +37,5 @@ def get_clean_data() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    # Test rapide de la fonction
     df_strava = get_clean_data()
     print(f"Données chargées avec succès : {df_strava.shape[0]} lignes trouvées.")
