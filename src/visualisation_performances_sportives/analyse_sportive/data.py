@@ -12,14 +12,14 @@ def get_clean_data() -> pd.DataFrame:
 
     et retourne un DataFrame pandas prêt pour l'analyse.
     """
-    # 1. Récupération dynamique du bucket et sécurisation du chemin
+    # 1. Récupération dynamique du bucket et du chemin
     bucket = os.getenv("S3_BUCKET", "paleo")
     chemin_s3 = f"{bucket}/donnees_strava/activites_clean.csv"
 
-    # 2. Récupération et formatage de l'endpoint HTTPS pour s3fs
-    endpoint = os.getenv("AWS_S3_ENDPOINT", "https://minio.lab.sspcloud.fr")
-    if endpoint and not endpoint.startswith("http"):
-        endpoint = f"https://{endpoint}"
+    # 2. Formatage sécurisé de l'endpoint (HTTP par défaut pour le cluster)
+    endpoint = os.getenv("AWS_S3_ENDPOINT", "http://minio-medas-usid0f:9000")
+    if not endpoint.startswith("http://") and not endpoint.startswith("https://"):
+        endpoint = f"http://{endpoint}"
 
     # 3. Configuration du système de fichiers S3
     fs = s3fs.S3FileSystem(
@@ -31,9 +31,7 @@ def get_clean_data() -> pd.DataFrame:
 
     # 4. Lecture directe du CSV distant
     with fs.open(chemin_s3, "rb") as f:
-        df = pd.read_csv(f)
-
-    return df
+        return pd.read_csv(f)
 
 
 if __name__ == "__main__":

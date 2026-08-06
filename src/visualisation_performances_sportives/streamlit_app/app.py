@@ -1,70 +1,57 @@
 import plotly.express as px
 import streamlit as st
 
-# 2. Importation de VOS modules locaux
-from visualisation_performances_sportives.analyse_sportive.data import get_clean_data
+from visualisation_performances_sportives.analyse_sportive.data import (
+    get_clean_data,
+)
+from visualisation_performances_sportives.streamlit_app.style import (
+    apply_custom_css,
+)
 
-# 1. Importation de votre CSS (CORRIGÉ POUR PASSER LE TEST)
-from visualisation_performances_sportives.streamlit_app.style import apply_custom_css
-
-# --- CONFIGURATION DE LA PAGE ---
+# Configuration de la page
 st.set_page_config(
     page_title="Espace Performance",
     page_icon="⚡",
     layout="wide",
-    initial_sidebar_state="collapsed",  # Caché sur la page d'accueil
+    initial_sidebar_state="collapsed",
 )
 
-# Application de votre design sur mesure (Marine, Beige, Noir)
 apply_custom_css()
 
 
-# --- CHARGEMENT DES DONNÉES VIA LE BACKEND ---
 @st.cache_data
 def load_data():
-    """
-    Charge les données depuis le stockage S3 en utilisant votre script data.py
-    exactement comme dans votre fonction generer_reporting_excel().
-    """
-    df_raw = get_clean_data()
-    return df_raw
+    """Charge les données nettoyées depuis S3."""
+    return get_clean_data()
 
 
-# --- GESTION DE LA NAVIGATION (Accueil vs Dashboard) ---
+# Gestion de la navigation
 if "entered_app" not in st.session_state:
     st.session_state.entered_app = False
 
 if not st.session_state.entered_app:
-    # ==========================================
-    # PAGE D'ACCUEIL (Landing Page)
-    # ==========================================
+    # Page d'accueil
     st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True)
-
     st.markdown(
-        "<h1 style='text-align: center; font-size: 70px; line-height: 1.1;'>"
-        "ANALYSE</h1>",
+        "<h1 style='text-align: center; font-size: 70px; "
+        "line-height: 1.1;'>ANALYSE</h1>",
         unsafe_allow_html=True,
     )
-
     st.markdown("<br><br>", unsafe_allow_html=True)
 
-    # Bouton central
     if st.button("ACCÉDER AUX PERFORMANCES"):
         st.session_state.entered_app = True
         st.rerun()
 
 else:
-    # ==========================================
-    # ESPACE PERFORMANCE (Dashboard)
-    # ==========================================
-
+    # Dashboard
     try:
         df = load_data()
     except Exception as e:
         st.error(f"Erreur lors du chargement des données depuis S3 : {e}")
         st.stop()
 
-    # --- BARRE LATÉRALE (FILTRES & RETOUR) ---
+    # Barre latérale (Filtres)
     if st.sidebar.button("← Retour à l'accueil"):
         st.session_state.entered_app = False
         st.rerun()
@@ -72,7 +59,6 @@ else:
     st.sidebar.markdown("---")
     st.sidebar.header("⚙️ Filtres Globaux")
 
-    # Filtre par Année
     if "annee" in df.columns:
         annees = df["annee"].dropna().unique().tolist()
         annee_selection = st.sidebar.selectbox(
@@ -81,7 +67,6 @@ else:
     else:
         annee_selection = "Toutes"
 
-    # Filtre par Type d'entraînement
     if "type_entrainement" in df.columns:
         types_entrainement = df["type_entrainement"].dropna().unique().tolist()
         type_selection = st.sidebar.multiselect(
@@ -92,26 +77,27 @@ else:
     else:
         type_selection = []
 
-    # Application des filtres
+    # Filtrage des données
     df_filtered = df.copy()
     if annee_selection != "Toutes" and "annee" in df_filtered.columns:
         df_filtered = df_filtered[df_filtered["annee"] == annee_selection]
     if type_selection and "type_entrainement" in df_filtered.columns:
         df_filtered = df_filtered[df_filtered["type_entrainement"].isin(type_selection)]
 
-    # --- TITRE DU DASHBOARD ---
     st.title("⚡ DASHBOARD PERFORMANCES")
     st.markdown("---")
 
-    # --- CRÉATION DES ONGLETS ---
     tab1, tab2, tab3 = st.tabs(
-        ["📅 Bilan Hebdomadaire", "📊 Analyse Globale", "⚖️ Suivi de la Charge (ACWR)"]
+        [
+            "📅 Bilan Hebdomadaire",
+            "📊 Analyse Globale",
+            "⚖️ Suivi de la Charge (ACWR)",
+        ]
     )
 
-    # --- 1. ONGLET BILAN HEBDOMADAIRE ---
+    # 1. Bilan Hebdomadaire
     with tab1:
         st.header("Résumé des Performances")
-
         col1, col2, col3, col4 = st.columns(4)
 
         vol_total = (
@@ -149,10 +135,9 @@ else:
         if cols_to_show:
             st.dataframe(df_filtered[cols_to_show].tail(10), use_container_width=True)
 
-    # --- 2. ONGLET ANALYSE GLOBALE ---
+    # 2. Analyse Globale
     with tab2:
         st.header("Tendances et Répartition")
-
         col_chart1, col_chart2 = st.columns(2)
 
         with col_chart1:
@@ -169,7 +154,7 @@ else:
                     x="trimestre",
                     y="distance_km",
                     text_auto=".1f",
-                    color_discrete_sequence=["#1D3557"],  # Marine
+                    color_discrete_sequence=["#1D3557"],
                 )
                 fig_vol.update_layout(
                     plot_bgcolor="#141414",
@@ -205,7 +190,7 @@ else:
             else:
                 st.info("Types d'entraînement non disponibles.")
 
-    # --- 3. ONGLET SUIVI DE CHARGE (ACWR) ---
+    # 3. Suivi de la Charge (ACWR)
     with tab3:
         st.header("Analyse de la Fatigue et du Rendement (ACWR)")
 
@@ -214,7 +199,6 @@ else:
             and "start_date_local" in df_filtered.columns
         ):
             st.subheader("Évolution du Ratio ACWR")
-
             df_chrono = df_filtered.sort_values("start_date_local").dropna(
                 subset=["Ratio_ACWR"]
             )
@@ -224,9 +208,8 @@ else:
                 x="start_date_local",
                 y="Ratio_ACWR",
                 markers=True,
-                color_discrete_sequence=["#F5F5DC"],  # Beige
+                color_discrete_sequence=["#F5F5DC"],
             )
-
             fig_acwr.add_hline(
                 y=1.5,
                 line_dash="dash",
@@ -247,7 +230,6 @@ else:
                 opacity=0.1,
                 annotation_text="Zone Optimale",
             )
-
             fig_acwr.update_layout(
                 plot_bgcolor="#141414",
                 paper_bgcolor="#141414",
@@ -257,11 +239,10 @@ else:
                 xaxis_title="Date",
             )
             st.plotly_chart(fig_acwr, use_container_width=True)
-
-        else:  # CORRIGÉ : Remise du else ici
+        else:
             st.warning(
-                "Les colonnes 'Ratio_ACWR' ou "
-                "'start_date_local' sont absentes des données traitées."
+                "Les colonnes 'Ratio_ACWR' ou 'start_date_local' "
+                "sont absentes des données traitées."
             )
 
         if "Statut Alerte" in df_filtered.columns:
@@ -272,20 +253,14 @@ else:
 
 
 def run():
-    """
-    Point d'entrée CLI (Command Line Interface).
-    Permet de lancer l'application via la configuration du pyproject.toml.
-    """
+    """Point d'entrée CLI pour lancer l'application Streamlit."""
     import subprocess
     import sys
     from pathlib import Path
 
-    # Récupère le chemin absolu de ce fichier (app.py)
     app_path = Path(__file__).resolve()
-
-    # Équivaut à taper 'python -m streamlit run app.py' dans le terminal
     subprocess.run([sys.executable, "-m", "streamlit", "run", str(app_path)])
 
 
 if __name__ == "__main__":
-    pass
+    run()
