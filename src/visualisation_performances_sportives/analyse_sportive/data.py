@@ -19,11 +19,11 @@ def get_clean_data() -> pd.DataFrame:
     if not endpoint.startswith("http://") and not endpoint.startswith("https://"):
         endpoint = f"https://{endpoint}"
 
+    # Connexion S3 basée uniquement sur les clés permanentes du secret
     fs = s3fs.S3FileSystem(
         client_kwargs={"endpoint_url": endpoint},
         key=os.getenv("AWS_ACCESS_KEY_ID"),
         secret=os.getenv("AWS_SECRET_ACCESS_KEY"),
-        token=os.getenv("AWS_SESSION_TOKEN"),
     )
 
     with fs.open(chemin_s3, "rb") as f:
