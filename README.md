@@ -18,9 +18,9 @@
 
 <hr>
 
-## 🏃‍♂️ Contexte & Synthèse Rapide
+##  Contexte & Synthèse Rapide
 
-Passionné par la course à pied depuis de nombreuses années (🔗 [Voir mes résultats FFA](https://www.athle.fr/athletes/4014686/resultats)), j'ai souhaité lier mon exigence sportive à mon expertise technique. Le projet MEDAS est né d'un constat simple : les données GPS (montres, capteurs) sont massives, mais les outils d'analyse de la charge d'entraînement (comme le ratio ACWR) manquent de modularité pour les athlètes amateurs.
+Passionné par la course à pied depuis de nombreuses années (🔗 [Voir mes résultats FFA](https://www.athle.fr/athletes/4014686/resultats)), j'ai souhaité améliorer un projet débuté dans le cadre de mon Master.  Le projet MEDAS est né d'un constat simple : les données GPS (montres, capteurs) sont massives, mais les outils d'analyse de la charge d'entraînement (comme le ratio ACWR) manquent de modularité pour les athlètes amateurs. Tout en sachant l'envergure et la qualité des logiciel d'analyses contemporain comme coros, j'ai  souhaité augemnter l'interactivté de ma solution et offrir un data product transposable à d'autres enjeux métiers. 
 
 Ce projet s'est déroulé en deux phases distinctes :
 
