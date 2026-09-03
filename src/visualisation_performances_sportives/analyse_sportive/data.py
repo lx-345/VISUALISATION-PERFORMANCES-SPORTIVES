@@ -9,7 +9,6 @@ load_dotenv()
 
 def get_clean_data() -> pd.DataFrame:
     """Récupère les données nettoyées depuis le bucket S3
-
     et retourne un DataFrame pandas prêt pour l'analyse.
     """
     bucket = os.getenv("S3_BUCKET", "paleo")
@@ -19,11 +18,12 @@ def get_clean_data() -> pd.DataFrame:
     if not endpoint.startswith("http://") and not endpoint.startswith("https://"):
         endpoint = f"https://{endpoint}"
 
-    # Connexion S3 basée uniquement sur les clés permanentes du secret
+    # Connexion S3 basée sur les clés temporaires incluant le token de session
     fs = s3fs.S3FileSystem(
         client_kwargs={"endpoint_url": endpoint},
         key=os.getenv("AWS_ACCESS_KEY_ID"),
         secret=os.getenv("AWS_SECRET_ACCESS_KEY"),
+        token=os.getenv("AWS_SESSION_TOKEN"),
     )
 
     with fs.open(chemin_s3, "rb") as f:
