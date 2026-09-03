@@ -44,6 +44,7 @@ def test_get_clean_data_deployment_simulation(mock_read_csv, mock_s3fs, monkeypa
         client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"},
         key="fake_prod_key",
         secret="fake_prod_secret",
+        token=None,
     )
 
     # 5. Assertions sur les données
